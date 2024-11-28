@@ -4,7 +4,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { cwd } from 'node:process';
-import merge from 'lodash.merge';
+import { merge } from 'es-toolkit';
 import { parse as htmlParser } from 'node-html-parser';
 import { build as tsupBuild, type Options as TsupOptions } from 'tsup';
 import { emptyDirSync, readFileSync, readJsonSync } from '@tomjs/node';
@@ -54,7 +54,7 @@ function preMergeOptions(options?: PluginOptions): PluginOptions {
         skipNodeModulesBundle: isDev,
       } as ExtensionOptions,
     },
-    options,
+    options as any,
   );
 
   const opt = opts.extension || {};

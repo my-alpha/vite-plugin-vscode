@@ -97,10 +97,17 @@
         if (e.origin.startsWith('vscode-webview://')) {
           iframe.contentWindow.postMessage(e.data, '*');
         } else if ('{{serverUrl}}'.startsWith(e.origin)) {
-          const { type, data } = e.data;
-          console.log(TAG + ' received:', e.data);
-          if (type === '[vscode:client]:postMessage') {
-            getApi().postMessage(data);
+          const { type, data } = e.data || {};
+          console.log(TAG + ` received:`, type, data);
+
+          switch (type) {
+            case '[vscode:client]:postMessage':
+              getApi().postMessage(data);
+              break;
+            case '[vscode:client]:event@keydown':
+              // https://github.com/microsoft/vscode/issues/65452#issuecomment-586485815
+              window.dispatchEvent(new KeyboardEvent('keydown', data));
+              break;
           }
         }
       }
@@ -149,7 +156,6 @@
             try {
               if (document.getElementById('_defaultStyles')) {
                 sendInitData(iframe);
-                // addListeners(iframe);
                 clearInterval(interval);
                 return;
               }
